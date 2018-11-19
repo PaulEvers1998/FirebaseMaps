@@ -1,12 +1,18 @@
 document.addEventListener("DOMContentLoaded", event => {
     console.log("app.js loaded");
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        if(user){
+            console.log("User is logged in " + user.displayName);
+        }else{
+            window.location.href = 'index.html'
+        }
+    });
 })
 
-function signInGoogle(){
-    const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider)
-    .then(result => {
-            const user = result.user;
-            document.getElementById("login").remove();
-    });
+function signOut(){
+    firebase.auth().signOut().then(function() {
+        console.log('Signed Out');
+      }
+    );
 }
