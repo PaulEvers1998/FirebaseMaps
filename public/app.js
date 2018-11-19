@@ -1,18 +1,20 @@
 document.addEventListener("DOMContentLoaded", event => {
     console.log("app.js loaded");
 
+    checkAuthState();
+
+})
+
+function checkAuthState(){
     firebase.auth().onAuthStateChanged(function (user) {
-        if(user){
+        if (user) {
             console.log("User is logged in " + user.displayName);
-        }else{
+        } else {
             window.location.href = 'index.html'
         }
     });
-})
+}
 
-function signOut(){
-    firebase.auth().signOut().then(function() {
-        console.log('Signed Out');
-      }
-    );
+function signOut() {
+    firebase.auth().signOut();
 }
