@@ -18,3 +18,7 @@ function checkAuthState(){
 function signOut() {
     firebase.auth().signOut();
 }
+
+function createMap(){
+    let map = null;
+}
