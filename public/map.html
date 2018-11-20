@@ -11,7 +11,7 @@
   <script defer src="/__/firebase/5.5.8/firebase-app.js"></script>
   <!-- Firebase features -->
   <script defer src="/__/firebase/5.5.8/firebase-auth.js"></script>
-  <script defer src="/__/firebase/5.5.8/firebase-database.js"></script>
+  <script defer src="/__/firebase/5.5.8/firebase-firestore.js"></script>
   <script defer src="/__/firebase/5.5.8/firebase-messaging.js"></script>
   <script defer src="/__/firebase/5.5.8/firebase-storage.js"></script>
   <!-- initialize the SDK after all desired features are loaded -->
@@ -49,13 +49,13 @@
       <div class="row justify-content-center">
         <div class="col"></div>
         <div class="col">
-          <input type="text" class="form-control" placeholder="Title" required>
+          <input id="title" type="text" class="form-control" placeholder="Title" required>
         </div>
         <div class="col">
-          <input type="text" class="form-control" placeholder="Adress" required>
+          <input id="adress" type="text" class="form-control" placeholder="Adress" required>
         </div>
         <div class="col">
-          <button class="btn btn-success" onclick="AddAdress()">Add</button>
+          <input type="button" class="btn btn-success" onclick="addAdress()" value="Add">
         </div>
 
       </div>
@@ -80,8 +80,8 @@
     crossorigin="anonymous"></script>
 
   <!--Google Maps API-->
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDLGnRuLz6yfQcGuacKxfkBKo8Aoixy52o&callback=initMap">
-  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDLGnRuLz6yfQcGuacKxfkBKo8Aoixy52o&libraries=places&callback=initMap"
+        async defer></script>
   <!--Custom JS-->
   <script src="app.js"></script>
 </body>

@@ -1,8 +1,11 @@
+let db;
+let currentUser;
+
 document.addEventListener('DOMContentLoaded', event => {
     console.log('app.js loaded');
 
     checkAuthState();
-
+    db = firebase.firestore();
 
 })
 
@@ -11,8 +14,10 @@ function checkAuthState() {
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             console.log("User is logged in " + user.displayName);
+            currentUser = user;
         } else {
             window.location.href = 'index.html'
+
         }
     });
 }
@@ -37,17 +42,30 @@ function initMap() {
             zoom: 8,
             center: start,
             disableDefaultUI: true,
-            styles: [{
+            styles: [
+                {
                     "featureType": "all",
                     "elementType": "geometry.fill",
-                    "stylers": [{
-                        "hue": "#ffa500"
-                    }]
+                    "stylers": [
+                        {
+                            "hue": "#ffa500"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "all",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#000000"
+                        }
+                    ]
                 },
                 {
                     "featureType": "administrative",
                     "elementType": "labels",
-                    "stylers": [{
+                    "stylers": [
+                        {
                             "visibility": "on"
                         },
                         {
@@ -58,7 +76,8 @@ function initMap() {
                 {
                     "featureType": "administrative",
                     "elementType": "labels.text.fill",
-                    "stylers": [{
+                    "stylers": [
+                        {
                             "visibility": "on"
                         },
                         {
@@ -72,14 +91,17 @@ function initMap() {
                 {
                     "featureType": "administrative",
                     "elementType": "labels.text.stroke",
-                    "stylers": [{
-                        "visibility": "off"
-                    }]
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
                 },
                 {
                     "featureType": "landscape",
                     "elementType": "all",
-                    "stylers": [{
+                    "stylers": [
+                        {
                             "visibility": "on"
                         },
                         {
@@ -96,35 +118,44 @@ function initMap() {
                 {
                     "featureType": "poi.business",
                     "elementType": "all",
-                    "stylers": [{
-                        "visibility": "off"
-                    }]
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
                 },
                 {
                     "featureType": "poi.park",
                     "elementType": "all",
-                    "stylers": [{
-                        "visibility": "off"
-                    }]
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
                 },
                 {
                     "featureType": "road",
                     "elementType": "geometry.stroke",
-                    "stylers": [{
-                        "visibility": "off"
-                    }]
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
                 },
                 {
                     "featureType": "road",
                     "elementType": "labels.icon",
-                    "stylers": [{
-                        "visibility": "off"
-                    }]
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
                 },
                 {
                     "featureType": "road.highway",
                     "elementType": "geometry",
-                    "stylers": [{
+                    "stylers": [
+                        {
                             "hue": "#ffa500"
                         },
                         {
@@ -138,21 +169,26 @@ function initMap() {
                 {
                     "featureType": "road.highway",
                     "elementType": "geometry.fill",
-                    "stylers": [{
-                        "color": "#ffa500"
-                    }]
+                    "stylers": [
+                        {
+                            "color": "#ffa500"
+                        }
+                    ]
                 },
                 {
                     "featureType": "road.highway",
                     "elementType": "geometry.stroke",
-                    "stylers": [{
-                        "visibility": "off"
-                    }]
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
                 },
                 {
                     "featureType": "road.highway",
                     "elementType": "labels",
-                    "stylers": [{
+                    "stylers": [
+                        {
                             "visibility": "simplified"
                         },
                         {
@@ -166,14 +202,17 @@ function initMap() {
                 {
                     "featureType": "road.highway.controlled_access",
                     "elementType": "labels",
-                    "stylers": [{
-                        "visibility": "on"
-                    }]
+                    "stylers": [
+                        {
+                            "visibility": "on"
+                        }
+                    ]
                 },
                 {
                     "featureType": "road.arterial",
                     "elementType": "all",
-                    "stylers": [{
+                    "stylers": [
+                        {
                             "visibility": "on"
                         },
                         {
@@ -187,7 +226,8 @@ function initMap() {
                 {
                     "featureType": "road.local",
                     "elementType": "all",
-                    "stylers": [{
+                    "stylers": [
+                        {
                             "saturation": "-100"
                         },
                         {
@@ -201,7 +241,8 @@ function initMap() {
                 {
                     "featureType": "transit.station.airport",
                     "elementType": "geometry.fill",
-                    "stylers": [{
+                    "stylers": [
+                        {
                             "visibility": "on"
                         },
                         {
@@ -212,10 +253,28 @@ function initMap() {
                 {
                     "featureType": "water",
                     "elementType": "all",
-                    "stylers": [{
-                        "visibility": "off"
-                    }]
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
                 }
             ]
         });
+
+    // Set adress input to autocomplete
+    let adressInput = document.getElementById('adress');
+    let autocomplete = new google.maps.places.Autocomplete(adressInput);
+
+}
+
+function addAdress(){
+    let titleInput = document.getElementById('title').value;
+    let adressInput = document.getElementById('adress').value;
+
+    db.collection('Locations').add({
+        title: titleInput,
+        adress: adressInput,
+        user: currentUser.email
+    });
 }
