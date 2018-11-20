@@ -1,24 +1,63 @@
-let db;
-let currentUser;
-let map;
+this.db;
+this.currentUser;
+this.map;
+
 
 document.addEventListener('DOMContentLoaded', event => {
     console.log('app.js loaded');
 
+    // Checks if user is logged in
     checkAuthState();
-    db = firebase.firestore();
+
+    // Sets database
+    dbInit();
+
+    // Places markers and checks for changes
+    markerUpdate();
 
 })
+
+function dbInit() {
+    db = firebase.firestore();
+    const settings = {
+        timestampsInSnapshots: true
+    };
+    db.settings(settings);
+}
+
+function markerUpdate() {
+    let locations = db.collection('Locations');
+
+    // Checks for changes in firestore
+    locations.onSnapshot(col => {
+        locations.get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    // Creates marker for each location in database
+                    createMarker(doc);;
+                });
+            })
+    });
+}
+
+function createMarker(doc) {
+
+    var marker = new google.maps.Marker({
+        position: JSON.parse(doc.data().latlng),
+        title: doc.data().title
+    });
+
+    marker.setMap(map);
+}
 
 function checkAuthState() {
     // Keeps checking wether the user is logged in or not
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
-            console.log("User is logged in " + user.displayName);
+            console.log('User is logged in ' + user.displayName);
             currentUser = user;
         } else {
             window.location.href = 'index.html'
-
         }
     });
 }
@@ -255,7 +294,7 @@ function addAdress() {
         db.collection("Locations").add({
                 title: titleInput,
                 place: addressInput,
-                latlng: geocode.toString(),
+                latlng: JSON.stringify(geocode),
                 user: currentUser.email
             })
             .then(function (docRef) {
@@ -264,9 +303,3 @@ function addAdress() {
             });
     });
 }
-
-//var marker = new google.maps.Marker({
-//position: geocode,
-//title: titleInput
-//});
-// marker.setMap(map);
