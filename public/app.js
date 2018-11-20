@@ -42,11 +42,28 @@ function markerUpdate() {
 
 function createMarker(doc) {
 
+    var data = doc.data();
+
+    // Creates infowindow
+    var markerString = '<h6>' + data.title + '</h6>' +
+                        '<p>By: ' + data.user + '</p>';
+    var infowindow = new google.maps.InfoWindow({
+        content: markerString
+      });
+
+
+    // Creates marker
     var marker = new google.maps.Marker({
-        position: JSON.parse(doc.data().latlng),
-        title: doc.data().title
+        position: JSON.parse(data.latlng),
+        title: data.title
     });
 
+    // Listens for click to show infowindow
+    marker.addListener('click', function() {
+        infowindow.open(map, marker);
+      });
+
+    // Adds marker to map
     marker.setMap(map);
 }
 
@@ -68,7 +85,6 @@ function signOut() {
 
 // Creates Google Map
 function initMap() {
-    console.log('Create map');
 
     // Center position of map in Eindhoven
     let start = {
