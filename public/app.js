@@ -1,5 +1,6 @@
 let db;
 let currentUser;
+let map;
 
 document.addEventListener('DOMContentLoaded', event => {
     console.log('app.js loaded');
@@ -37,35 +38,29 @@ function initMap() {
     };
 
     // Creates map with settings and custom style
-    let map = new google.maps.Map(
+    map = new google.maps.Map(
         document.getElementById('map'), {
             zoom: 8,
             center: start,
             disableDefaultUI: true,
-            styles: [
-                {
+            styles: [{
                     "featureType": "all",
                     "elementType": "geometry.fill",
-                    "stylers": [
-                        {
-                            "hue": "#ffa500"
-                        }
-                    ]
+                    "stylers": [{
+                        "hue": "#ffa500"
+                    }]
                 },
                 {
                     "featureType": "all",
                     "elementType": "labels.text.fill",
-                    "stylers": [
-                        {
-                            "color": "#000000"
-                        }
-                    ]
+                    "stylers": [{
+                        "color": "#000000"
+                    }]
                 },
                 {
                     "featureType": "administrative",
                     "elementType": "labels",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "visibility": "on"
                         },
                         {
@@ -76,8 +71,7 @@ function initMap() {
                 {
                     "featureType": "administrative",
                     "elementType": "labels.text.fill",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "visibility": "on"
                         },
                         {
@@ -91,17 +85,14 @@ function initMap() {
                 {
                     "featureType": "administrative",
                     "elementType": "labels.text.stroke",
-                    "stylers": [
-                        {
-                            "visibility": "off"
-                        }
-                    ]
+                    "stylers": [{
+                        "visibility": "off"
+                    }]
                 },
                 {
                     "featureType": "landscape",
                     "elementType": "all",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "visibility": "on"
                         },
                         {
@@ -118,44 +109,35 @@ function initMap() {
                 {
                     "featureType": "poi.business",
                     "elementType": "all",
-                    "stylers": [
-                        {
-                            "visibility": "off"
-                        }
-                    ]
+                    "stylers": [{
+                        "visibility": "off"
+                    }]
                 },
                 {
                     "featureType": "poi.park",
                     "elementType": "all",
-                    "stylers": [
-                        {
-                            "visibility": "off"
-                        }
-                    ]
+                    "stylers": [{
+                        "visibility": "off"
+                    }]
                 },
                 {
                     "featureType": "road",
                     "elementType": "geometry.stroke",
-                    "stylers": [
-                        {
-                            "visibility": "off"
-                        }
-                    ]
+                    "stylers": [{
+                        "visibility": "off"
+                    }]
                 },
                 {
                     "featureType": "road",
                     "elementType": "labels.icon",
-                    "stylers": [
-                        {
-                            "visibility": "off"
-                        }
-                    ]
+                    "stylers": [{
+                        "visibility": "off"
+                    }]
                 },
                 {
                     "featureType": "road.highway",
                     "elementType": "geometry",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "hue": "#ffa500"
                         },
                         {
@@ -169,26 +151,21 @@ function initMap() {
                 {
                     "featureType": "road.highway",
                     "elementType": "geometry.fill",
-                    "stylers": [
-                        {
-                            "color": "#ffa500"
-                        }
-                    ]
+                    "stylers": [{
+                        "color": "#ffa500"
+                    }]
                 },
                 {
                     "featureType": "road.highway",
                     "elementType": "geometry.stroke",
-                    "stylers": [
-                        {
-                            "visibility": "off"
-                        }
-                    ]
+                    "stylers": [{
+                        "visibility": "off"
+                    }]
                 },
                 {
                     "featureType": "road.highway",
                     "elementType": "labels",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "visibility": "simplified"
                         },
                         {
@@ -202,17 +179,14 @@ function initMap() {
                 {
                     "featureType": "road.highway.controlled_access",
                     "elementType": "labels",
-                    "stylers": [
-                        {
-                            "visibility": "on"
-                        }
-                    ]
+                    "stylers": [{
+                        "visibility": "on"
+                    }]
                 },
                 {
                     "featureType": "road.arterial",
                     "elementType": "all",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "visibility": "on"
                         },
                         {
@@ -226,8 +200,7 @@ function initMap() {
                 {
                     "featureType": "road.local",
                     "elementType": "all",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "saturation": "-100"
                         },
                         {
@@ -241,8 +214,7 @@ function initMap() {
                 {
                     "featureType": "transit.station.airport",
                     "elementType": "geometry.fill",
-                    "stylers": [
-                        {
+                    "stylers": [{
                             "visibility": "on"
                         },
                         {
@@ -253,11 +225,9 @@ function initMap() {
                 {
                     "featureType": "water",
                     "elementType": "all",
-                    "stylers": [
-                        {
-                            "visibility": "off"
-                        }
-                    ]
+                    "stylers": [{
+                        "visibility": "off"
+                    }]
                 }
             ]
         });
@@ -268,13 +238,35 @@ function initMap() {
 
 }
 
-function addAdress(){
+function addAdress() {
     let titleInput = document.getElementById('title').value;
-    let adressInput = document.getElementById('adress').value;
+    let addressInput = document.getElementById('adress').value;
 
-    db.collection('Locations').add({
-        title: titleInput,
-        adress: adressInput,
-        user: currentUser.email
+    let geocoder = new google.maps.Geocoder();
+    let geocode;
+
+    // Converts adress to latlng values and saves it to database
+    geocoder.geocode({
+        'address': addressInput
+    }, function (results, status) {
+        geocode = results[0].geometry.location;
+
+        // Saving to database
+        db.collection("Locations").add({
+                title: titleInput,
+                place: addressInput,
+                latlng: geocode.toString(),
+                user: currentUser.email
+            })
+            .then(function (docRef) {
+                console.log("Document written with ID: ", docRef.id);
+                alert(addressInput + ' has been added to the map.');
+            });
     });
 }
+
+//var marker = new google.maps.Marker({
+//position: geocode,
+//title: titleInput
+//});
+// marker.setMap(map);
